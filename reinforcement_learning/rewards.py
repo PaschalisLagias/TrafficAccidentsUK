@@ -26,9 +26,8 @@ def reverse_order(counts: dict):
     values: List of counts dictionary values, sorted in descending order.
     """
     items = sorted(counts.items(), key=lambda count: count[1], reverse=True)
-    keys = [item[0] for item in items]
-    keys.reverse()
-    values = [item[1] for item in items]
+    keys, values = zip(*items)
+    keys = list(reversed(keys))
     return keys, values
 
 

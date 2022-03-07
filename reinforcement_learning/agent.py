@@ -13,13 +13,12 @@ ending up to a new state.
 """
 import numpy as np
 
+import metrics
 from memory import Memory
 from dqnetwork import create_dqn
 
 from tensorflow.keras.layers import Activation
 from tensorflow.keras.models import load_model
-
-from sklearn.metrics import confusion_matrix
 
 
 class Agent(object):
@@ -120,8 +119,10 @@ class Agent(object):
         max_actions = np.argmax(q_eval, axis=1)
         q_target = q_current
         batch_index = np.arange(self.batch_size, dtype=np.int32)
-        q_target[batch_index, action_indices] = reward + \
-                self.gamma * q_next[batch_index, max_actions.astype(int)] * done
+        q_target[batch_index, action_indices] = reward + self.gamma * q_next[
+                                                    batch_index,
+                                                    max_actions.astype(int)
+                                                ] * done
         _ = self.eval_dqn.fit(state, q_target, verbose=0,
                               use_multiprocessing=True)
         if self.epsilon > self.epsilon_end:
@@ -185,31 +186,30 @@ class Agent(object):
         return predictions
 
     @staticmethod
-    def report(predictions, true_labels):
+    def report(predictions: np.ndarray, true_labels: np.ndarray):
         """
         Prints the results of the predictions compared with the test y labels.
 
         :param predictions: Predicted casualty severity for test data records.
         :param true_labels: Actual casualty severity for test data records.
         """
-        conf_matrix = confusion_matrix(true_labels, predictions)
-        true_pos = np.diag(conf_matrix)
-        true_cases = conf_matrix.sum(axis=1)
-        class_acc = np.multiply(np.divide(true_pos, true_cases), 100)
-        class_acc = np.around(class_acc, decimals=3)
-        avg_accuracy = np.around(np.mean(class_acc), decimals=3)
-        harm_mean = np.around(np.divide(3, np.sum(np.divide(1, class_acc))), 3)
-        total_found = sum(true_pos)
-        test_size = true_labels.shape[0]
-        total_missed = test_size - total_found
-        val_accuracy = round(100 * (total_found / test_size), 2)
+        metrics_ = metrics.metrics_dict(predictions, true_labels)
 
-        print(f"\nValidation accuracy: {val_accuracy} %\n\n",
-              f"Total correct classifications: {total_found}\n",
-              f"Total missed: {total_missed}\n\n",
-              f"Confusion Matrix:\n{conf_matrix}\n\n",
-              f"Fatal accident classification accuracy (%): {class_acc[0]}\n",
-              f"Severe accident classification accuracy (%): {class_acc[1]}\n",
-              f"Light accident classification accuracy (%): {class_acc[2]}\n\n",
-              f"Average class accuracy (%): {avg_accuracy}\n",
-              f"Harmonic mean of class accuracy (%): {harm_mean}")
+        print(
+            f"\nValidation accuracy:",
+            f"{metrics_['Validation Accuracy']} %\n\n",
+            f"Total correct classifications:",
+            f"{metrics_['Total correct classifications']}\n",
+            f"Total missed: {metrics_['Total wrong classifications']}\n\n",
+            f"Confusion Matrix:\n{metrics_['Confusion Matrix']}\n\n",
+            "Fatal accident classification accuracy (%):",
+            f"{metrics_['Class Accuracies'][0]}\n",
+            "Severe accident classification accuracy (%):",
+            f"{metrics_['Class Accuracies'][1]}\n",
+            "Light accident classification accuracy (%):",
+            f"{metrics_['Class Accuracies'][2]}\n\n",
+            "Average class accuracy (%):",
+            f"{metrics_['Average Class Accuracy']}\n",
+            "Harmonic mean of class accuracy (%):",
+            f"{metrics_['Class Accuracy Harmonic Mean']}"
+        )

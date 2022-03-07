@@ -1,6 +1,12 @@
 """
 Class to transform training and test data to input format suitable for neural
 networks (supervised learning and reinforcement learning).
+
+Glossary:
+- Numerical field: Data field with a continuous value.
+- Categorical field: Data field that takes a finite set of values.
+- Label encoder: Converts the finite distinct values of a categorical field to
+integers, starting from 0.
 """
 import numpy as np
 
@@ -18,11 +24,11 @@ class DataTransformer(object):
     def __init__(self, train_data, numerical_fields, test_data=None):
         """
         :param train_data: Training data as pandas dataframe.
-        :param numerical_fields: List of strings, the fields to be treated as
-        numerical in training data.
+        :param numerical_fields: List of strings, the data fields to be treated
+        as numerical.
         :param test_data: Test data as pandas dataframe. If no test data is
-        passed to the class, DataTransformer splits training data in training
-        and test sets.
+        passed to DataTransformer, training data are split training and test
+        sets.
         """
         self.train_data = train_data
         self.test_data = test_data
@@ -30,16 +36,16 @@ class DataTransformer(object):
         all_fields = self.train_data.columns
         non_categorical = self.numerical_fields + ["Casualty_Severity"]
         self.categorical = all_fields.symmetric_difference(non_categorical)
-        self.numerical_pipe = Pipeline([
-            ("normalization", Normalizer(copy=False))
-        ])
+
+        self.y_label_fixer = LabelEncoder()
+        self.numerical_pipe = Pipeline([("normalizer", Normalizer(copy=False))])
         self.categorical_pipe = Pipeline([
-            ("one hot encoding", OneHotEncoder(sparse=False, dtype=np.int))
+            ("one-hot encoder", OneHotEncoder(sparse=False, dtype=np.int))
         ])
-        self.label_fixer = LabelEncoder()
+
         self.preprocessor = ColumnTransformer([
-            ("normalization", self.numerical_pipe, self.numerical_fields),
-            ("one hot encoding", self.categorical_pipe, self.categorical)
+            ("normalizer", self.numerical_pipe, self.numerical_fields),
+            ("one-hot encoder", self.categorical_pipe, self.categorical)
         ])
 
     def prepare_data(self):
@@ -53,16 +59,17 @@ class DataTransformer(object):
 
         :return: Transformed and preprocessed training and test X and Y.
         """
-        train_response = self.train_data["Casualty_Severity"]
-        y_train = self.label_fixer.fit_transform(train_response)
+        y_train_column = self.train_data["Casualty_Severity"]
+        y_train = self.y_label_fixer.fit_transform(y_train_column)
         self.train_data.drop(columns=["Casualty_Severity"], inplace=True)
         x_train = self.preprocessor.fit_transform(self.train_data)
 
         if self.test_data is not None:
-            test_response = self.test_data["Casualty_Severity"]
-            y_test = self.label_fixer.transform(test_response)
+            y_test_column = self.test_data["Casualty_Severity"]
+            y_test = self.y_label_fixer.transform(y_test_column)
             self.test_data.drop(columns=["Casualty_Severity"], inplace=True)
             x_test = self.preprocessor.transform(self.test_data)
+
         else:
             x_train, x_test, y_train, y_test = train_test_split(
                 x_train,
@@ -70,4 +77,5 @@ class DataTransformer(object):
                 shuffle=True,
                 random_state=2
             )
+
         return x_train, x_test, y_train, y_test

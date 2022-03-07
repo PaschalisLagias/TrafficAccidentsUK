@@ -165,10 +165,9 @@ class Accidents(gym.Env):
         """
         min_reward = min(self.rewards_.values())
         terminal_limit = -2 * min_reward
-        return any([
-            reward < terminal_limit,
-            self.samples - step_number == 1
-        ])
+        reward_check = reward < terminal_limit
+        step_check = self.samples - step_number == 1
+        return any([reward_check, step_check])
 
     def step(self, action: int):
         """
@@ -200,6 +199,12 @@ class Accidents(gym.Env):
             self.step_counter += 1
             observation = self.x[self.step_counter]
         return observation, reward, done, (label, severity)
+
+    def sample_obs_space(self):
+        pass
+
+    def sample_action_space(self):
+        pass
 
     def render(self, mode="human"):
         """
