@@ -2,15 +2,13 @@
 Module to run reinforcement learning experiments.
 """
 
-
-# constants
 import pandas as pd
 
 from transformer import DataTransformer
 from reinforcement_learning.environment import Accidents
 from reinforcement_learning.agent import Agent
 
-
+# constants
 GAMMA = 0.1
 BATCH_SIZE = 512
 LEARNING_RATE = 0.001

@@ -19,7 +19,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-import metrics
+from metrics import metrics_dict
 import time
 import numpy as np
 
@@ -137,15 +137,17 @@ class Classifier(object):
         result is the vector of predicted labels (predicted class per data
         sample).
         """
-        return np.argmax(predicted_probs)
+        return np.argmax(predicted_probs, axis=1)
 
-    def predict_class_labels(self, x_test: np.ndarray):
+    def predict_class_labels(self, predicted_probs: np.ndarray):
         """
-        :param x_test: Numpy array with test data samples.
+        :param predicted_probs: Array with rows equal to the number of
+        predicted labels and columns equal to the number of classes for the
+        response variable. Each row contains a predicted probability per class.
 
         :return: Array with predicted class label for every test sample.
         """
-        return self.classes_from_probs(self.predict_probs(x_test))
+        return self.classes_from_probs(predicted_probs)
 
     def report(self, predictions, true_labels, history, runtime):
         """
@@ -159,7 +161,7 @@ class Classifier(object):
         dataset y values (casualty severities).
         """
         # Get classification metrics and training accuracy
-        metrics_ = metrics.metrics_dict(predictions, true_labels)
+        metrics_ = metrics_dict(predictions, true_labels)
         train_accuracy = 100 * round(history.history['accuracy'][-1], 2)
 
         # Check epochs

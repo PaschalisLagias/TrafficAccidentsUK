@@ -47,6 +47,3 @@ def metrics_dict(predictions: np.ndarray, true_labels: np.ndarray):
     }
 
     return metrics
-
-
-

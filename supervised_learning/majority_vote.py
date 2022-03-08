@@ -7,7 +7,7 @@ majority vote.
 import numpy as np
 
 
-def average_probs(all_predictions: list):
+def average_classes(all_predictions: list):
     """
     :param all_predictions: List of nupy arrays, where each array holds the
     probability predictions for every possible class of the response
@@ -20,4 +20,4 @@ def average_probs(all_predictions: list):
     probability_sums = np.sum(all_predictions, axis=0)
     num_of_networks = len(all_predictions)
     averaged_arr = np.divide(probability_sums, num_of_networks)
-    return averaged_arr
+    return np.argmax(averaged_arr, axis=1)
