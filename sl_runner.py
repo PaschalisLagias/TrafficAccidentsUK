@@ -39,7 +39,12 @@ def main():
     ]
 
     # Prepare data for neural network models
-    data_transformer = DataTransformer(train_data, numerical_fields, test_data)
+    data_transformer = DataTransformer(
+        train_data,
+        numerical_fields,
+        0.25,
+        test_data
+    )
     x_train, x_val, y_train, y_val = data_transformer.prepare_train_data()
     x_test, y_test = data_transformer.prepare_test_data()
     inp_shape = x_train.shape[1]

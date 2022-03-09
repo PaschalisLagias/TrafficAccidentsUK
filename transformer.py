@@ -21,16 +21,20 @@ class DataTransformer(object):
     Class to transform pre-processed data to format suitable for machine
     learning.
     """
-    def __init__(self, train_data, numerical_fields, test_data=None):
+    def __init__(self, train_data, numerical_fields, val_size: float = 0.25,
+                 test_data=None):
         """
         :param train_data: Training data as pandas dataframe.
         :param numerical_fields: List of strings, the data fields to be treated
         as numerical.
+        :param val_size: Percentage of the training data to be used for
+        validation.
         :param test_data: Test data as pandas dataframe. If no test data is
         passed to DataTransformer, training data are split training and test
         sets.
         """
         self.train_data = train_data
+        self.validation_size = val_size
         self.test_data = test_data
         self.numerical_fields = numerical_fields
         all_fields = self.train_data.columns
@@ -54,7 +58,8 @@ class DataTransformer(object):
         - Numerical fields are normalized.
         - Categorical fields are one-hot encoded.
         - Casualty severity data get label-encoded.
-        - Training data are split in training data and validation data.
+        - Training data are split in training data and validation data (75%
+        training, 25% validation).
 
         :return: Transformed and preprocessed training and validation X and Y.
         """
@@ -66,6 +71,7 @@ class DataTransformer(object):
         x_train, x_val, y_train, y_val = train_test_split(
             x_train,
             y_train,
+            test_size=self.validation_size,
             shuffle=True,
             random_state=2
         )
