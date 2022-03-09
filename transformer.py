@@ -48,34 +48,44 @@ class DataTransformer(object):
             ("one-hot encoder", self.categorical_pipe, self.categorical)
         ])
 
-    def prepare_data(self):
+    def prepare_train_data(self):
         """
-        Transforms input training and test data with the following process:
+        Transforms input training data with the following process:
         - Numerical fields are normalized.
         - Categorical fields are one-hot encoded.
         - Casualty severity data get label-encoded.
-        - If no test dataset is provided, training data are split to training
-        and test datasets.
+        - Training data are split in training data and validation data.
 
-        :return: Transformed and preprocessed training and test X and Y.
+        :return: Transformed and preprocessed training and validation X and Y.
         """
         y_train_column = self.train_data["Casualty_Severity"]
         y_train = self.y_label_fixer.fit_transform(y_train_column)
         self.train_data.drop(columns=["Casualty_Severity"], inplace=True)
         x_train = self.preprocessor.fit_transform(self.train_data)
 
+        x_train, x_val, y_train, y_val = train_test_split(
+            x_train,
+            y_train,
+            shuffle=True,
+            random_state=2
+        )
+
+        return x_train, x_val, y_train, y_val
+
+    def prepare_test_data(self):
+        """
+        Transforms input test data with the following process:
+        - Numerical fields are normalized.
+        - Categorical fields are one-hot encoded.
+        - Casualty severity data get label-encoded.
+
+        :return: Transformed and preprocessed test X and Y.
+        """
         if self.test_data is not None:
             y_test_column = self.test_data["Casualty_Severity"]
             y_test = self.y_label_fixer.transform(y_test_column)
             self.test_data.drop(columns=["Casualty_Severity"], inplace=True)
             x_test = self.preprocessor.transform(self.test_data)
 
-        else:
-            x_train, x_test, y_train, y_test = train_test_split(
-                x_train,
-                y_train,
-                shuffle=True,
-                random_state=2
-            )
-
-        return x_train, x_test, y_train, y_test
+            return x_test, y_test
+        raise AttributeError("No test dataset has been provided!")

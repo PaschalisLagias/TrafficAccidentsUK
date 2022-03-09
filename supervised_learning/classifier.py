@@ -31,8 +31,8 @@ class Classifier(object):
 
     def __init__(self, alpha: float, neurons: tuple, classes: int,
                  batch_size: int, input_dims: int, patience: int, cycles: int,
-                 pred_batch: int, class_weights: dict = None,
-                 model_name="BestModel.hdf5"):
+                 pred_batch: int, model_name="BestModel.hdf5",
+                 class_weights: dict = None):
         """
         :param alpha: Adam optimizer learning rate.
         :param neurons: Tuple with neurons per layer except from the output.
