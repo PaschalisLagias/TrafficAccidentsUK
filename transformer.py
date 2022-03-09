@@ -78,7 +78,7 @@ class DataTransformer(object):
 
         return x_train, x_val, y_train, y_val
 
-    def prepare_test_data(self):
+    def prepare_validation_data(self):
         """
         Transforms input test data with the following process:
         - Numerical fields are normalized.

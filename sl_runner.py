@@ -46,7 +46,7 @@ def main():
         test_data
     )
     x_train, x_val, y_train, y_val = data_transformer.prepare_train_data()
-    x_test, y_test = data_transformer.prepare_test_data()
+    x_test, y_test = data_transformer.prepare_validation_data()
     inp_shape = x_train.shape[1]
 
     # CREATE MODELS
