@@ -7,13 +7,14 @@ from supervised_learning.majority_vote import average_classes
 from supervised_learning.classifier import Classifier
 from metrics import metrics_dict
 from transformer import DataTransformer
+from supervised_learning.class_weights import get_class_weights
 
 # constants
 BATCH_SIZE = 512
 LEARNING_RATE = 0.001
 NUMBER_OF_CLASSES = 3
-STOPPING_CHECKS = 5
-TRAINING_EPOCHS = 2
+STOPPING_CHECKS = 10
+TRAINING_EPOCHS = 200
 CLASS_WEIGHTS = {
     "fatal": {0: 17.5, 1: 2.44, 2: 0.69},
     "severe": {0: 19.5, 1: 3.44, 2: 0.69},
@@ -42,12 +43,17 @@ def main():
     data_transformer = DataTransformer(
         train_data,
         numerical_fields,
-        0.25,
-        test_data
+        test_data=test_data
     )
+
+    # Create training, validation and test sets
     x_train, x_val, y_train, y_val = data_transformer.prepare_train_data()
     x_test, y_test = data_transformer.prepare_validation_data()
     inp_shape = x_train.shape[1]
+
+    # Get default class weights based on class frequency:
+    default_weights = get_class_weights(y_train)
+    CLASS_WEIGHTS["default"] = default_weights
 
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
@@ -80,6 +86,14 @@ def main():
                          "BestModel_for_AverageClassAccuracy.hdf5",
                          CLASS_WEIGHTS["average"]
                          )
+
+    # Neural network with default class weights
+    ann_default = Classifier(LEARNING_RATE, (1200, 1200, 1200),
+                             NUMBER_OF_CLASSES, BATCH_SIZE, inp_shape,
+                             STOPPING_CHECKS, TRAINING_EPOCHS, BATCH_SIZE,
+                             "Model_with_DefaultWeights.hdf5",
+                             CLASS_WEIGHTS["default"]
+                             )
 
     # FIT MODELS AND GET CLASS PROBABILITIES AND PREDICTIONS PER MODEL
     # Neural network skilled at finding fatal injuries
@@ -130,6 +144,18 @@ def main():
     ann_avg_probs = ann_avg.predict_probs(x_test)
     ann_avg_predictions = ann_avg.predict_class_labels(ann_avg_probs)
 
+    # Neural network with default class weights
+    print("\n\n\nFitting model with default class weights...\n\n")
+    ann_def_fit, ann_def_timer = ann_default.fit_model(
+        x_train,
+        x_val,
+        y_train,
+        y_val
+    )
+
+    ann_def_probs = ann_default.predict_probs(x_test)
+    ann_def_predictions = ann_default.predict_class_labels(ann_def_probs)
+
     # REPORT RESULTS
     # Neural network sensitive to fatal injuries
     print("\nReport results for fatal casualty sensitive model:\n")
@@ -167,12 +193,21 @@ def main():
         ann_avg_timer
     )
 
+    # Neural network with default class weights
+    print("\n\n\nReport results for model with good average class accuracy:\n")
+    ann_default.report(
+        ann_def_predictions,
+        y_test,
+        ann_def_fit,
+        ann_def_timer
+    )
     # Get majority vote
     avg_predictions = average_classes([
         fatal_ann_probs,
         ann_severe_probs,
         ann_probs,
-        ann_avg_probs
+        ann_avg_probs,
+        ann_def_probs
     ])
 
     # Get metrics for ensemble predictions
