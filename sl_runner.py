@@ -202,7 +202,7 @@ def main():
         ann_def_timer
     )
     # Get majority vote
-    avg_predictions = average_classes([
+    ensemble_predictions = average_classes([
         fatal_ann_probs,
         ann_severe_probs,
         ann_probs,
@@ -211,7 +211,7 @@ def main():
     ])
 
     # Get metrics for ensemble predictions
-    avg_metrics = metrics_dict(avg_predictions, y_test)
+    avg_metrics = metrics_dict(ensemble_predictions, y_test)
 
     # Print results
     print(
