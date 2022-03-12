@@ -4,6 +4,7 @@ while training a neural network. Class weights are applied at loss function
 stage during training, making the model more sensitive towards the class with
 the largest weight.
 """
+
 from sklearn.utils.class_weight import compute_class_weight
 import numpy as np
 

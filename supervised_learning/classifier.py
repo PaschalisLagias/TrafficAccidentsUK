@@ -184,17 +184,26 @@ class Classifier(object):
             "Severe accident classification accuracy (%):",
             f"{metrics_['Class Accuracies'][1]}\n",
             "Light accident classification accuracy (%):",
-            f"{metrics_['Class Accuracies'][2]}\n\n",
-            f"Fatal accident class weight: {round(self.class_weights[0], 3)}\n",
-            "Severe accident class weight:",
-            f"{round(self.class_weights[1], 3)}\n",
-            "Light accident class weight:",
-            f"{round(self.class_weights[2], 3)}\n\n",
+            f"{metrics_['Class Accuracies'][2]}\n\n"
+        )
+
+        # Print class weights if not None
+        if self.class_weights:
+            print(
+                f"Fatal accident class weight:",
+                f"{round(self.class_weights[0], 3)}\n",
+                "Severe accident class weight:",
+                f"{round(self.class_weights[1], 3)}\n",
+                "Light accident class weight:",
+                f"{round(self.class_weights[2], 3)}\n\n"
+                )
+
+        print(
             "Average class accuracy (%):",
             f"{metrics_['Average Class Accuracy']}\n",
             "Harmonic mean of class accuracy (%):",
             f"{metrics_['Class Accuracy Harmonic Mean']}"
-        )
+            )
 
     def save_network(self):
         """

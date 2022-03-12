@@ -57,7 +57,7 @@ def main():
 
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
-    ann_fatal = Classifier(LEARNING_RATE, (1000, 1000, 1000), NUMBER_OF_CLASSES,
+    ann_fatal = Classifier(LEARNING_RATE, (100, 1000, 1000), NUMBER_OF_CLASSES,
                            BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                            TRAINING_EPOCHS, BATCH_SIZE,
                            "BestModel_for_FatalCasualties.hdf5",
@@ -121,7 +121,7 @@ def main():
     ann_severe_predictions = ann_severe.predict_class_labels(ann_severe_probs)
 
     # Neural network without class weights
-    print("\n\n\nFitting model to get good average class accuracy...\n\n")
+    print("\n\n\nFitting model to get good validation accuracy...\n\n")
     ann_fit, ann_timer = ann_.fit_model(
         x_train,
         x_val,
@@ -176,7 +176,7 @@ def main():
     )
 
     # Neural network without class weights
-    print("\n\n\nReport results for model with good average class accuracy:\n")
+    print("\n\n\nReport results for model with good validation accuracy:\n")
     ann_.report(
         ann_predictions,
         y_test,
@@ -194,7 +194,7 @@ def main():
     )
 
     # Neural network with default class weights
-    print("\n\n\nReport results for model with good average class accuracy:\n")
+    print("\n\n\nReport results for model with default class weights:\n")
     ann_default.report(
         ann_def_predictions,
         y_test,
