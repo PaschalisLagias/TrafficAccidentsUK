@@ -44,6 +44,7 @@ def main():
     default_weights = get_class_weights(y_train)
     CLASS_WEIGHTS["default"] = default_weights
 
+    # Initialize and train model
     lrg_model = LRGClassifier(
         penalty=PENALTY,
         class_weight=CLASS_WEIGHTS["default"],
@@ -54,9 +55,11 @@ def main():
     )
     lrg_model.fit_model(x_train, y_train)
 
+    # Validation dataset
     y_val_predictions = lrg_model.predict(x_val)
     lrg_model.report(y_val, y_val_predictions, "VALIDATION SET RESULTS")
 
+    # Test dataset
     y_test_predictions = lrg_model.predict(x_test)
     lrg_model.report(y_test, y_test_predictions, "TEST SET RESULTS")
 
