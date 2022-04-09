@@ -58,7 +58,8 @@ def main():
                               )
 
     # Neural network sensitive to severe casualty severity
-    ann_severe = ANNClassifier(LEARNING_RATE, (2000, 500), NUMBER_OF_CLASSES,
+    ann_severe = ANNClassifier(LEARNING_RATE, (100, 800, 1000),
+                               NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
                                "BestModel_for_SevereCasualties.hdf5",
