@@ -18,6 +18,7 @@ def create_dqn(l_rate, n_actions, input_dims, lyr1_dims, lyr2_dims, lyr3_dims):
 
     :return: Returns the Q-Network to train.
     """
+    # TODO: Make function more flexible with different network architectures
     model = Sequential([
         Dense(lyr1_dims, kernel_initializer='he_uniform',
               input_shape=(input_dims, )),

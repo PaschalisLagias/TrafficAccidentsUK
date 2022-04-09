@@ -8,10 +8,10 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 
 
-def metrics_dict(predictions: np.ndarray, true_labels: np.ndarray):
+def metrics_dict(true_labels: np.ndarray, predictions: np.ndarray):
     """
-    :param predictions: Array with predicted casualty severity class labels.
     :param true_labels: Array with actual casualty severity class labels.
+    :param predictions: Array with predicted casualty severity class labels.
 
     :return: Dictionary with classification metrics
     """
@@ -32,7 +32,7 @@ def metrics_dict(predictions: np.ndarray, true_labels: np.ndarray):
     total_found = sum(true_pos)
     test_size = true_labels.shape[0]
     total_missed = test_size - total_found
-    val_accuracy = round(100 * (total_found / test_size), 2)
+    accuracy = round(100 * (total_found / test_size), 2)
 
     # Save metrics in a dictionary
     metrics = {
@@ -40,7 +40,7 @@ def metrics_dict(predictions: np.ndarray, true_labels: np.ndarray):
         "Average Class Accuracy": avg_accuracy,
         "Class Accuracy Harmonic Mean": harm_mean,
         "Class Accuracies": class_acc,
-        "Validation Accuracy": val_accuracy,
+        "Accuracy": accuracy,
         "Total correct classifications": total_found,
         "Total wrong classifications": total_missed,
         "Number of test data samples": test_size

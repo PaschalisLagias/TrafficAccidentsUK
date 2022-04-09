@@ -52,7 +52,7 @@ class DataTransformer(object):
             ("one-hot encoder", self.categorical_pipe, self.categorical)
         ])
 
-    def prepare_train_data(self):
+    def get_train_val_data(self):
         """
         Transforms input training data with the following process:
         - Numerical fields are normalized.
@@ -78,7 +78,7 @@ class DataTransformer(object):
 
         return x_train, x_val, y_train, y_val
 
-    def prepare_validation_data(self):
+    def prepare_test_data(self):
         """
         Transforms input test data with the following process:
         - Numerical fields are normalized.
@@ -90,8 +90,8 @@ class DataTransformer(object):
         if self.test_data is not None:
             y_test_column = self.test_data["Casualty_Severity"]
             y_test = self.y_label_fixer.transform(y_test_column)
+
             self.test_data.drop(columns=["Casualty_Severity"], inplace=True)
             x_test = self.preprocessor.transform(self.test_data)
-
             return x_test, y_test
         raise AttributeError("No test dataset has been provided!")

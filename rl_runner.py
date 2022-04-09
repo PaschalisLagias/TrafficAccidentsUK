@@ -22,8 +22,8 @@ PENALTY_STYLE = "standard"
 MODE = "Start"
 DQN_NAME = "doubleQNet.h5"
 MEMORY_NAME = "double_qnet_memory.npz"
-train_data_path = None
-test_data_path = None
+train_data_path = "data/data0518.feather.feather"
+test_data_path = "data/data2019.feather"
 
 
 def main():
@@ -31,8 +31,6 @@ def main():
     Function that runs the entire reinforcement learning process.
     """
     mode = MODE
-    train_data = pd.read_feather(train_data_path)
-    test_data = pd.read_feather(test_data_path)
     numerical_fields = [
         'Age_of_Casualty',
         'Age_of_Driver',
@@ -40,10 +38,17 @@ def main():
         'Number_of_Vehicles',
         'Speed_limit'
     ]
+    train_data = pd.read_feather(train_data_path)
+    test_data = pd.read_feather(test_data_path)
+
+    # Create training, validation and test sets
     data_transformer = DataTransformer(train_data, numerical_fields, test_data)
-    x_train, x_test, y_train, y_test = data_transformer.prepare_data()
-    inp_shape = x_train.shape[1]
+    x_train, x_val, y_train, y_val = data_transformer.get_train_val_data()
+    x_test, y_test = data_transformer.prepare_test_data()
+
+    # Prepare environment and agent
     environment = Accidents(x_train, y_train)
+    inp_shape = x_train.shape[1]
     if mode == "start":
         epsilon_initial = EPSILON_INITIAL
     else:
@@ -51,13 +56,15 @@ def main():
     agent = Agent(alpha=LEARNING_RATE, gamma=GAMMA, n_actions=3,
                   epsilon=epsilon_initial, batch_size=BATCH_SIZE,
                   input_dims=inp_shape, epsilon_dec=EPSILON_DECREMENT,
-                  epsilon_end=EPSILON_FINAL, mem_size=MEMORY_SIZE)
+                  epsilon_end=EPSILON_FINAL, mem_size=MEMORY_SIZE,
+                  dqn_name=DQN_NAME, mem_name=MEMORY_NAME, replace_target=500)
 
     # Load model weights and memory if training is restarted:
     if mode == "continue":
         agent.load_model()
         agent.load_memory()
     observation = environment.x[0]
+
     # Start running episodes:
     for i in range(TRAIN_EPISODES):
         done = False
@@ -67,18 +74,22 @@ def main():
             action = agent.choose_action(observation)
             observation_, reward, done, info = environment.step(action)
 
-            # Save transition in memory:
+            # Save transition in memory, learn and update Q-network:
             agent.remember(observation, action, reward, observation_, done)
             observation = observation_
-
-            # Learn and update Q-Network:
             agent.learn()
 
         print(f"Epsilon: {round(agent.epsilon, 3)}")
 
-    # Make predictions and report results:
-    predictions = agent.make_predictions(test_episodes=x_test, batch_size=400)
-    agent.report(predictions, y_test)
+    # Make predictions, report results and save model:
+    print("REPORT VALIDATION SET RESULTS\n")
+    val_predictions = agent.make_predictions(x_val, BATCH_SIZE)
+    agent.report(y_val, val_predictions)
+
+    print("\n\nREPORT TEST SET RESULTS\n")
+    test_predictions = agent.make_predictions(x_test, BATCH_SIZE)
+    agent.report(y_test, test_predictions)
+
     agent.save_model()
     agent.save_memory()
 

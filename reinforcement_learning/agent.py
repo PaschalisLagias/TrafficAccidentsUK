@@ -169,35 +169,32 @@ class Agent(object):
         self.memory.reward_memory = memory["arr_4"]
         self.memory.terminal_memory = memory["arr_5"]
 
-    def make_predictions(self, test_episodes, batch_size):
+    def make_predictions(self, x_test: np.ndarray, batch_size: int):
         """
-        Makes predictions for a batch of unseen data samples.
+        Makes predictions for a batch of data samples.
 
-        :param test_episodes: Numpy array with unseen training samples (test X).
+        :param x_test: Numpy array with unseen data samples (test X).
         :param batch_size: Batch size.
 
         :return: Casualty severity predictions for the test data.
         """
         self.target_dqn.add(Activation("softmax"))
-        predictions = self.target_dqn.predict_classes(
-            test_episodes,
-            batch_size=batch_size
-        )
-        return predictions
+        probabilities = self.target_dqn.predict(x_test, batch_size=batch_size)
+        return np.argmax(probabilities, axis=1)
 
     @staticmethod
-    def report(predictions: np.ndarray, true_labels: np.ndarray):
+    def report(true_labels: np.ndarray, predictions: np.ndarray):
         """
         Prints the results of the predictions compared with the test y labels.
 
         :param predictions: Predicted casualty severity for test data records.
         :param true_labels: Actual casualty severity for test data records.
         """
-        metrics_ = metrics.metrics_dict(predictions, true_labels)
+        metrics_ = metrics.metrics_dict(true_labels, predictions)
 
         print(
-            f"\nValidation accuracy:",
-            f"{metrics_['Validation Accuracy']} %\n\n",
+            f"\nTest accuracy:",
+            f"{metrics_['Accuracy']} %\n\n",
             f"Total correct classifications:",
             f"{metrics_['Total correct classifications']}\n",
             f"Total missed: {metrics_['Total wrong classifications']}\n\n",
@@ -206,7 +203,7 @@ class Agent(object):
             f"{metrics_['Class Accuracies'][0]}\n",
             "Severe accident classification accuracy (%):",
             f"{metrics_['Class Accuracies'][1]}\n",
-            "Light accident classification accuracy (%):",
+            "Slight accident classification accuracy (%):",
             f"{metrics_['Class Accuracies'][2]}\n\n",
             "Average class accuracy (%):",
             f"{metrics_['Average Class Accuracy']}\n",

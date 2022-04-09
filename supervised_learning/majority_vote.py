@@ -9,7 +9,7 @@ import numpy as np
 
 def average_classes(all_predictions: list):
     """
-    :param all_predictions: List of nupy arrays, where each array holds the
+    :param all_predictions: List of numpy arrays, where each array holds the
     probability predictions for every possible class of the response
     variable. All arrays in the list will be of equal size.
 
