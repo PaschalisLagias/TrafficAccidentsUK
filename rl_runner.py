@@ -42,7 +42,8 @@ def main():
     test_data = pd.read_feather(test_data_path)
 
     # Create training, validation and test sets
-    data_transformer = DataTransformer(train_data, numerical_fields, test_data)
+    data_transformer = DataTransformer(train_data, numerical_fields,
+                                       test_data=test_data)
     x_train, x_val, y_train, y_val = data_transformer.get_train_val_data()
     x_test, y_test = data_transformer.prepare_test_data()
 

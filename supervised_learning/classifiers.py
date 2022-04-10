@@ -26,9 +26,7 @@ import numpy as np
 
 METRICS = [
     "accuracy",
-    "val_accuracy",
     "sparse_categorical_accuracy",
-    "val_sparse_categorical_accuracy"
 ]
 
 
@@ -258,10 +256,35 @@ class LRGClassifier(LogisticRegression):
     scikit-learn Logistic Regression class, methods are added for timed model
     fitting and reporting of respective results.
     """
-
-    def __init__(self, *args, **kwargs):
-        super(LRGClassifier, self).__init__(*args, **kwargs)
+    def __init__(self, labels=None, penalty='l2', dual=False, tol=0.0001, C=1.0,
+                 fit_intercept=True, intercept_scaling=1, class_weight=None,
+                 random_state=None, solver='lbfgs', max_iter=100,
+                 multi_class='auto', verbose=0, warm_start=False, n_jobs=None,
+                 l1_ratio=None):
+        """
+        Please refer to sklearn.linear_model.LogisticRegression documentation
+        for detailed information about model parameters:
+        https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?msclkid=1c37939db8bd11ec89f5dbf1fe324f9d
+        """
+        super(LRGClassifier, self).__init__(
+            penalty=penalty,
+            dual=dual,
+            tol=tol,
+            C=C,
+            fit_intercept=fit_intercept,
+            intercept_scaling=intercept_scaling,
+            class_weight=class_weight,
+            random_state=random_state,
+            solver=solver,
+            max_iter=max_iter,
+            multi_class=multi_class,
+            verbose=verbose,
+            warm_start=warm_start,
+            n_jobs=n_jobs,
+            l1_ratio=l1_ratio
+        )
         self.runtime = None
+        self.labels = labels
 
     def fit_model(self, x_train, y_train):
         """
@@ -280,14 +303,14 @@ class LRGClassifier(LogisticRegression):
         records.
         :param predictions: Predicted casualty severity for unseen records
         with Accidents, Vehicles and Casualties information (unseen episodes).
-        :param runtime: Model fitting runtime
         :param title: Report title e.g. 'VALIDATION SET RESULTS'.
 
         This function reports the results of predictions for a dataset (e.g. a
         validation or a test dataset).
         """
         metrics_ = metrics_dict(true_labels, predictions)
-        results = classification_report(true_labels, predictions)
+        results = classification_report(true_labels, predictions,
+                                        labels=self.labels)
 
         # Print metrics and results
         print(

@@ -36,7 +36,8 @@ def main():
     ]
 
     # Prepare data for neural network models
-    data_transformer = DataTransformer(train_data, numerical_fields, test_data)
+    data_transformer = DataTransformer(train_data, numerical_fields,
+                                       test_data=test_data)
 
     # Create training, validation and test sets
     x_train, x_val, y_train, y_val = data_transformer.get_train_val_data()
