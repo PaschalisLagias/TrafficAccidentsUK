@@ -256,12 +256,13 @@ class LRGClassifier(LogisticRegression):
     scikit-learn Logistic Regression class, methods are added for timed model
     fitting and reporting of respective results.
     """
-    def __init__(self, labels=None, penalty='l2', dual=False, tol=0.0001, C=1.0,
+    def __init__(self, names=None, penalty='l2', dual=False, tol=0.0001, C=1.0,
                  fit_intercept=True, intercept_scaling=1, class_weight=None,
                  random_state=None, solver='lbfgs', max_iter=100,
                  multi_class='auto', verbose=0, warm_start=False, n_jobs=None,
                  l1_ratio=None):
         """
+        :param names: Casualty severity class names.
         Please refer to sklearn.linear_model.LogisticRegression documentation
         for detailed information about model parameters:
         https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html?msclkid=1c37939db8bd11ec89f5dbf1fe324f9d
@@ -284,7 +285,7 @@ class LRGClassifier(LogisticRegression):
             l1_ratio=l1_ratio
         )
         self.runtime = None
-        self.labels = labels
+        self.names = names
 
     def fit_model(self, x_train, y_train):
         """
@@ -310,7 +311,7 @@ class LRGClassifier(LogisticRegression):
         """
         metrics_ = metrics_dict(true_labels, predictions)
         results = classification_report(true_labels, predictions,
-                                        labels=self.labels)
+                                        target_names=self.names)
 
         # Print metrics and results
         print(

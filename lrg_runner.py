@@ -11,7 +11,7 @@ from supervised_learning.class_weights import get_class_weights, CLASS_WEIGHTS
 SOLVER = "saga"
 MULTICLASS = "multinomial"
 PENALTY = "l2"
-LABELS = ["Fatal", "Severe", "Slight"]
+NAMES = ["Fatal", "Severe", "Slight"]
 
 # Data
 train_data_path = "data/data0518.feather.feather"
@@ -47,7 +47,7 @@ def main():
 
     # Initialize and train model
     lrg_model = LRGClassifier(
-        labels=LABELS,
+        names=NAMES,
         penalty=PENALTY,
         class_weight=CLASS_WEIGHTS["default"],
         solver=SOLVER,
