@@ -3,6 +3,7 @@ Module to run supervised learning experiments.
 """
 
 import pandas as pd
+from sklearn.metrics import classification_report
 from supervised_learning.majority_vote import average_classes
 from supervised_learning.classifiers import ANNClassifier
 from metrics import metrics_dict
@@ -15,6 +16,7 @@ LEARNING_RATE = 0.001
 NUMBER_OF_CLASSES = 3
 STOPPING_CHECKS = 10
 TRAINING_EPOCHS = 200
+NAMES = ["Fatal", "Severe", "Slight"]
 
 train_data_path = "data/data0518.feather.feather"
 test_data_path = "data/data2019.feather"
@@ -54,7 +56,7 @@ def main():
                               NUMBER_OF_CLASSES,
                               BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                               TRAINING_EPOCHS, BATCH_SIZE,
-                              "BestModel_for_FatalCasualties.hdf5",
+                              "BestModel_for_FatalCasualties.hdf5", NAMES,
                               CLASS_WEIGHTS["fatal"]
                               )
 
@@ -63,7 +65,7 @@ def main():
                                NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
-                               "BestModel_for_SevereCasualties.hdf5",
+                               "BestModel_for_SevereCasualties.hdf5", NAMES,
                                CLASS_WEIGHTS["severe"]
                                )
 
@@ -71,13 +73,13 @@ def main():
     ann_avg = ANNClassifier(LEARNING_RATE, (2000, 500), NUMBER_OF_CLASSES,
                             BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                             TRAINING_EPOCHS, BATCH_SIZE,
-                            "BestModel_for_AverageClassAccuracy.hdf5",
+                            "BestModel_for_AverageClassAccuracy.hdf5", NAMES,
                             CLASS_WEIGHTS["average"]
                             )
 
     # FIT MODELS AND GET CLASS PROBABILITIES AND PREDICTIONS PER MODEL
     # Neural network skilled at finding fatal injuries
-    print("FITTING MODEL SENSITIVE TO FATAL CASUALTIES...\n")
+    print("\nFITTING MODEL SENSITIVE TO FATAL CASUALTIES...\n")
     ann_fatal_fit, ann_fatal_timer = ann_fatal.fit_model(
         x_train,
         x_val,
@@ -149,6 +151,8 @@ def main():
 
     # Get metrics for ensemble predictions
     avg_metrics = metrics_dict(y_test, ensemble_predictions)
+    final_report = classification_report(y_test, ensemble_predictions,
+                                         target_names=NAMES)
 
     # Print results
     print(
@@ -167,7 +171,8 @@ def main():
         "Average class accuracy (%):",
         f"{avg_metrics['Average Class Accuracy']}\n",
         "Harmonic mean of class accuracy (%):",
-        f"{avg_metrics['Class Accuracy Harmonic Mean']}"
+        f"{avg_metrics['Class Accuracy Harmonic Mean']}\n\n",
+        f"CLASSIFICATION REPORT:\n\n{final_report}"
     )
 
 

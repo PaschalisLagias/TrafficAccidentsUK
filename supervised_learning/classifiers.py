@@ -38,7 +38,7 @@ class ANNClassifier(object):
     def __init__(self, alpha: float, neurons: tuple, classes: int,
                  batch_size: int, input_dims: int, patience: int, cycles: int,
                  pred_batch: int, model_name="BestModel.hdf5",
-                 class_weights: dict = None):
+                 names: list = None, class_weights: dict = None):
         """
         :param alpha: Adam optimizer learning rate.
         :param neurons: Tuple with neurons per hidden layer.
@@ -49,6 +49,7 @@ class ANNClassifier(object):
         :param patience: Training epochs to check before Early Stopping.
         :param cycles: Number of epochs to train.
         :param pred_batch: Batch size when predicting.
+        :param names: Casualty severity class names.
         :param model_name: File name to save model and weights.
         :param class_weights: Class weights to be used in network fitting.
         They are saved as a dictionary {class: weight, class: weight, ...}
@@ -61,8 +62,9 @@ class ANNClassifier(object):
         self.patience = patience
         self.cycles = cycles
         self.pred_batch = pred_batch
-        self.class_weights = class_weights
         self.model_name = model_name
+        self.names = names
+        self.class_weights = class_weights
         self.network = self.create_ann()
 
     def create_ann(self):
@@ -180,6 +182,8 @@ class ANNClassifier(object):
         """
         # Get classification metrics and training accuracy
         metrics_ = metrics_dict(true_labels, predictions)
+        results = classification_report(true_labels, predictions,
+                                        target_names=self.names)
         train_accuracy = self.best_metric(history, "accuracy")
         train_sparse_cat_accuracy = self.best_metric(
             history,
@@ -201,11 +205,11 @@ class ANNClassifier(object):
             f"Training epochs: {epochs_run}\n",
             f"Best epoch (lowest validation loss): {best_epoch}\n\n",
             f"Training accuracy: {train_accuracy} %\n",
-            f"Validation accuracy: {val_accuracy} %\n",
+            f"Validation accuracy: {val_accuracy} %\n\n",
             f"Training Sparse Categorical Accuracy:",
             f"{train_sparse_cat_accuracy} %\n",
             f"Validation Sparse Categorical Accuracy:",
-            f"{val_sparse_cat_accuracy} %\n",
+            f"{val_sparse_cat_accuracy} %\n\n",
             f"Test accuracy: {metrics_['Accuracy']} %\n\n",
             "Total correct classifications:",
             f"{metrics_['Total correct classifications']}\n",
@@ -234,7 +238,8 @@ class ANNClassifier(object):
             "Average class accuracy (%):",
             f"{metrics_['Average Class Accuracy']}\n",
             "Harmonic mean of class accuracy (%):",
-            f"{metrics_['Class Accuracy Harmonic Mean']}"
+            f"{metrics_['Class Accuracy Harmonic Mean']}\n\n",
+            f"CLASSIFICATION REPORT:\n\n{results}"
         )
 
     def save_network(self):
@@ -344,5 +349,5 @@ class LRGClassifier(LogisticRegression):
             f"{metrics_['Average Class Accuracy']}\n",
             "Harmonic mean of class accuracy (%):",
             f"{metrics_['Class Accuracy Harmonic Mean']}\n\n",
-            f"Classification Report:\n\n{results}"
+            f"CLASSIFICATION REPORT:\n\n{results}"
         )
