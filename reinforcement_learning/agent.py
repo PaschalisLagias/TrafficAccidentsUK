@@ -14,6 +14,7 @@ ending up to a new state.
 import numpy as np
 
 import metrics
+from sklearn.metrics import classification_report
 from memory import Memory
 from dqnetwork import create_dqn
 
@@ -27,7 +28,7 @@ class Agent(object):
     learning experiments.
     """
 
-    def __init__(self, alpha, gamma, n_actions, epsilon, batch_size,
+    def __init__(self, alpha, gamma, n_actions, names, epsilon, batch_size,
                  input_dims, epsilon_dec=0.996, epsilon_end=0.01,
                  mem_size=10000, dqn_name="doubleQNet.h5",
                  mem_name="dqn_memory.npz", replace_target=500):
@@ -35,6 +36,7 @@ class Agent(object):
         :param alpha: Adam optimizer learning rate.
         :param gamma: Reward discount parameter.
         :param n_actions: Number of distinct actions.
+        :param names: List with casualty severity class names.
         :param epsilon: Initial epsilon, used for epsilon-greedy policy.
         :param batch_size: Number of records to sample from memory.
         :param input_dims: Number of fields in a training sample.
@@ -51,6 +53,7 @@ class Agent(object):
         """
         self.action_space = [i for i in range(n_actions)]
         self.n_actions = n_actions
+        self.names = names
         self.gamma = gamma
         self.epsilon = epsilon
         self.epsilon_dec = epsilon_dec
@@ -182,8 +185,7 @@ class Agent(object):
         probabilities = self.target_dqn.predict(x_test, batch_size=batch_size)
         return np.argmax(probabilities, axis=1)
 
-    @staticmethod
-    def report(true_labels: np.ndarray, predictions: np.ndarray):
+    def report(self, true_labels: np.ndarray, predictions: np.ndarray):
         """
         Prints the results of the predictions compared with the test y labels.
 
@@ -191,7 +193,8 @@ class Agent(object):
         :param true_labels: Actual casualty severity for test data records.
         """
         metrics_ = metrics.metrics_dict(true_labels, predictions)
-
+        results = classification_report(true_labels, predictions,
+                                        target_names=self.names)
         print(
             f"\nTest accuracy:",
             f"{metrics_['Accuracy']} %\n\n",
@@ -208,5 +211,6 @@ class Agent(object):
             "Average class accuracy (%):",
             f"{metrics_['Average Class Accuracy']}\n",
             "Harmonic mean of class accuracy (%):",
-            f"{metrics_['Class Accuracy Harmonic Mean']}"
+            f"{metrics_['Class Accuracy Harmonic Mean']}",
+            f"CLASSIFICATION REPORT:\n\n{results}"
         )

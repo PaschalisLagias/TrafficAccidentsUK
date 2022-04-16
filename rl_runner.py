@@ -22,6 +22,7 @@ PENALTY_STYLE = "standard"
 MODE = "Start"
 DQN_NAME = "doubleQNet.h5"
 MEMORY_NAME = "double_qnet_memory.npz"
+CLASS_NAMES = ["Fatal", "Severe", "Slight"]
 train_data_path = "data/data0518.feather.feather"
 test_data_path = "data/data2019.feather"
 
@@ -55,10 +56,11 @@ def main():
     else:
         epsilon_initial = EPSILON_FINAL
     agent = Agent(alpha=LEARNING_RATE, gamma=GAMMA, n_actions=3,
-                  epsilon=epsilon_initial, batch_size=BATCH_SIZE,
-                  input_dims=inp_shape, epsilon_dec=EPSILON_DECREMENT,
-                  epsilon_end=EPSILON_FINAL, mem_size=MEMORY_SIZE,
-                  dqn_name=DQN_NAME, mem_name=MEMORY_NAME, replace_target=500)
+                  names=CLASS_NAMES, epsilon=epsilon_initial,
+                  batch_size=BATCH_SIZE, input_dims=inp_shape,
+                  epsilon_dec=EPSILON_DECREMENT, epsilon_end=EPSILON_FINAL,
+                  mem_size=MEMORY_SIZE, dqn_name=DQN_NAME,
+                  mem_name=MEMORY_NAME, replace_target=500)
 
     # Load model weights and memory if training is restarted:
     if mode == "continue":
