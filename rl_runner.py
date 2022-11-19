@@ -23,7 +23,7 @@ MODE = "Start"
 DQN_NAME = "doubleQNet.h5"
 MEMORY_NAME = "double_qnet_memory.npz"
 CLASS_NAMES = ["Fatal", "Severe", "Slight"]
-train_data_path = "data/data0518.feather.feather"
+train_data_path = "data/data0518.feather"
 test_data_path = "data/data2019.feather"
 
 
