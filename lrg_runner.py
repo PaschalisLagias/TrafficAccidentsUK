@@ -8,7 +8,7 @@ from transformer import DataTransformer
 from supervised_learning.class_weights import get_class_weights, CLASS_WEIGHTS
 
 # Constants
-SOLVER = "saga"
+SOLVER = "lbfgs"
 MULTICLASS = "multinomial"
 PENALTY = "l2"
 NAMES = ["Fatal", "Severe", "Slight"]
