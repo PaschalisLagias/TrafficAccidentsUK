@@ -14,7 +14,7 @@ PENALTY = "l2"
 NAMES = ["Fatal", "Severe", "Slight"]
 
 # Data
-train_data_path = "data/data0518.feather.feather"
+train_data_path = "data/data0518.feather"
 test_data_path = "data/data2019.feather"
 
 
