@@ -53,7 +53,7 @@ def main():
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
     ann_fatal = ANNClassifier(LEARNING_RATE,
-                              (100, 1000, 1000, 1300, 1500, 1000),
+                              (100, 1000, 1000, 1300, 1500, 2000),
                               NUMBER_OF_CLASSES,
                               BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                               TRAINING_EPOCHS, BATCH_SIZE,
@@ -63,7 +63,7 @@ def main():
 
     # Neural network sensitive to severe casualty severity
     ann_severe = ANNClassifier(LEARNING_RATE,
-                               (2200, 1800, 1500, 1200, 1000, 200),
+                               (1800, 1800, 1800, 1800, 1800, 1800),
                                NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
@@ -73,7 +73,7 @@ def main():
 
     # Neural network skilled at getting good average class accuracy
     ann_avg = ANNClassifier(LEARNING_RATE,
-                            (2400, 1500, 1200, 1000, 500, 200),
+                            (2400, 1800, 1200, 1000, 800, 400),
                             NUMBER_OF_CLASSES,
                             BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                             TRAINING_EPOCHS, BATCH_SIZE,
