@@ -73,7 +73,8 @@ class DataTransformer(object):
             y_train,
             test_size=self.validation_size,
             shuffle=True,
-            random_state=2
+            random_state=2,
+            stratify=y_train
         )
 
         return x_train, x_val, y_train, y_val
