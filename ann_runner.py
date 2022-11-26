@@ -14,7 +14,7 @@ from supervised_learning.class_weights import get_class_weights, CLASS_WEIGHTS
 BATCH_SIZE = 512
 LEARNING_RATE = 0.001
 NUMBER_OF_CLASSES = 3
-STOPPING_CHECKS = 10
+STOPPING_CHECKS = 5
 TRAINING_EPOCHS = 200
 NAMES = ["Fatal", "Severe", "Slight"]
 
@@ -53,7 +53,7 @@ def main():
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
     ann_fatal = ANNClassifier(LEARNING_RATE,
-                              (100, 1000, 1000, 1300, 1500, 2000),
+                              (100, 600, 800, 800, 600, 100),
                               NUMBER_OF_CLASSES,
                               BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                               TRAINING_EPOCHS, BATCH_SIZE,
@@ -63,7 +63,7 @@ def main():
 
     # Neural network sensitive to severe casualty severity
     ann_severe = ANNClassifier(LEARNING_RATE,
-                               (1800, 1800, 1800, 1800, 1800, 1800),
+                               (800, 800, 800, 800, 800, 800),
                                NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
@@ -73,7 +73,7 @@ def main():
 
     # Neural network skilled at getting good average class accuracy
     ann_avg = ANNClassifier(LEARNING_RATE,
-                            (2400, 1800, 1200, 1000, 800, 400),
+                            (1500, 1000, 800, 800, 400, 200),
                             NUMBER_OF_CLASSES,
                             BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                             TRAINING_EPOCHS, BATCH_SIZE,
