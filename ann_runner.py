@@ -9,6 +9,7 @@ from supervised_learning.classifiers import ANNClassifier
 from metrics import metrics_dict
 from transformer import DataTransformer
 from supervised_learning.class_weights import get_class_weights, CLASS_WEIGHTS
+from tensorflow import config as tf_config
 
 # Constants
 BATCH_SIZE = 512
@@ -17,6 +18,7 @@ NUMBER_OF_CLASSES = 3
 STOPPING_CHECKS = 5
 TRAINING_EPOCHS = 200
 NAMES = ["Fatal", "Severe", "Slight"]
+DEVICE = "CPU"
 
 train_data_path = "data/data0518.feather"
 test_data_path = "data/data2019.feather"
@@ -80,6 +82,11 @@ def main():
                             "BestModel_for_AverageClassAccuracy.hdf5", NAMES,
                             CLASS_WEIGHTS["average"]
                             )
+
+    # Define tensorflow visible devices
+    device_list = tf_config.list_physical_devices()
+    if DEVICE == "CPU":
+        tf_config.set_visible_devices(device_list[0])
 
     # FIT MODELS AND GET CLASS PROBABILITIES AND PREDICTIONS PER MODEL
     # Neural network skilled at finding fatal injuries
@@ -178,6 +185,9 @@ def main():
         f"{avg_metrics['Class Accuracy Harmonic Mean']}\n\n",
         f"CLASSIFICATION REPORT:\n\n{final_report}"
     )
+
+    # Reset tensorflow visible devices
+    tf_config.set_visible_devices(device_list)
 
 
 if __name__ == "__main__":
