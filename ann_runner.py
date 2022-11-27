@@ -52,6 +52,11 @@ def main():
     default_weights = get_class_weights(y_train)
     CLASS_WEIGHTS["default"] = default_weights
 
+    # Define tensorflow visible devices
+    device_list = tf_config.list_physical_devices()
+    if DEVICE == "CPU":
+        tf_config.set_visible_devices(device_list[0])
+
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
     ann_fatal = ANNClassifier(LEARNING_RATE,
@@ -82,11 +87,6 @@ def main():
                             "BestModel_for_AverageClassAccuracy.hdf5", NAMES,
                             CLASS_WEIGHTS["average"]
                             )
-
-    # Define tensorflow visible devices
-    device_list = tf_config.list_physical_devices()
-    if DEVICE == "CPU":
-        tf_config.set_visible_devices(device_list[0])
 
     # FIT MODELS AND GET CLASS PROBABILITIES AND PREDICTIONS PER MODEL
     # Neural network skilled at finding fatal injuries
