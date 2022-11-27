@@ -186,9 +186,6 @@ def main():
         f"CLASSIFICATION REPORT:\n\n{final_report}"
     )
 
-    # Reset tensorflow visible devices
-    tf_config.set_visible_devices(device_list)
-
 
 if __name__ == "__main__":
     main()
