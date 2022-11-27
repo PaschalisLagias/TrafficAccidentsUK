@@ -70,7 +70,7 @@ def main():
 
     # Neural network sensitive to severe casualty severity
     ann_severe = ANNClassifier(LEARNING_RATE,
-                               (800, 800, 800, 800, 800, 800),
+                               (200, 600, 800, 800, 600, 200),
                                NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
@@ -80,7 +80,7 @@ def main():
 
     # Neural network skilled at getting good average class accuracy
     ann_avg = ANNClassifier(LEARNING_RATE,
-                            (1500, 1000, 800, 800, 400, 200),
+                            (200, 700, 1000, 1000, 700, 200),
                             NUMBER_OF_CLASSES,
                             BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                             TRAINING_EPOCHS, BATCH_SIZE,
