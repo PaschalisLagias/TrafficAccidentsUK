@@ -18,7 +18,7 @@ NUMBER_OF_CLASSES = 3
 STOPPING_CHECKS = 5
 TRAINING_EPOCHS = 200
 NAMES = ["Fatal", "Severe", "Slight"]
-DEVICE = "CPU"
+DEVICE = "GPU"
 
 train_data_path = "data/data0518.feather"
 test_data_path = "data/data2019.feather"
@@ -60,7 +60,7 @@ def main():
     # CREATE MODELS
     # Neural network sensitive to fatal casualty severity
     ann_fatal = ANNClassifier(LEARNING_RATE,
-                              (50, 300, 500, 500, 500, 300, 50),
+                              (100, 600, 800, 800, 800, 600, 100),
                               NUMBER_OF_CLASSES,
                               BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                               TRAINING_EPOCHS, BATCH_SIZE,
@@ -70,7 +70,7 @@ def main():
 
     # Neural network sensitive to severe casualty severity
     ann_severe = ANNClassifier(LEARNING_RATE,
-                               (400, 400, 400, 400, 200, 150, 100),
+                               (800, 800, 800, 800, 800, 800, 800),
                                NUMBER_OF_CLASSES,
                                BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                                TRAINING_EPOCHS, BATCH_SIZE,
@@ -80,7 +80,7 @@ def main():
 
     # Neural network skilled at getting good average class accuracy
     ann_avg = ANNClassifier(LEARNING_RATE,
-                            (600, 600, 500, 500, 200, 200, 100),
+                            (1500, 1000, 800, 800, 800, 400, 200),
                             NUMBER_OF_CLASSES,
                             BATCH_SIZE, inp_shape, STOPPING_CHECKS,
                             TRAINING_EPOCHS, BATCH_SIZE,
