@@ -18,7 +18,7 @@ NUMBER_OF_CLASSES = 3
 STOPPING_CHECKS = 5
 TRAINING_EPOCHS = 200
 NAMES = ["Fatal", "Severe", "Slight"]
-DEVICE = "CPU"
+DEVICE = "GPU"
 
 train_data_path = "data/data0518.feather"
 test_data_path = "data/data2019.feather"
